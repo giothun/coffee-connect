@@ -1,14 +1,11 @@
 from config import INFINITY
+from blossom import blossom_algorithm
 
 
 # Greedy approach to compare with smart algorithm
 def greedy(graph):
-    edges = []
-    n = len(graph)
-    for i in range(n):
-        for j in range(i + 1, n):
-            edges.append([graph[i][j], i, j])
-    edges.sort(key=lambda x: -x[0])
+    edges = sorted(graph, key=lambda x: -x[2])
+    n = max([i for i, j, w in graph]) + 1
     used = [0] * n
     cost = 0
     res = []
@@ -70,7 +67,7 @@ def hungarian_algorithm(graph):
             if j0 == 0:
                 break
     res = []
-    # print(p)
+    print(p)
     used = [0] * n
     for i in range(1, len(p)):
         if p[i] != 0 and p[i] != i and used[p[i]] == 0 and used[i] == 0:
@@ -78,21 +75,22 @@ def hungarian_algorithm(graph):
             used[p[i]] = 1
             res.append([i - 1, p[i] - 1])
             p[p[i]] = 0
-    # print(res)
+    print(res)
     # print(-v[0])
     return res, -v[0]
 
 
 # Function that compares which algorithm finds a better matching
-# Returns True if hungarian algorithm did not worse, False otherwise
-def compare(graph):
-    _, cost1 = greedy(graph)
-    _, cost2 = hungarian_algorithm(graph)
+# Returns True if first algorithm did not worse, False otherwise
+def compare(graph, f1, f2):
+    _, cost1 = f1(graph)
+    _, cost2 = f2(graph)
     return cost2 >= cost1
 
 
 # Takes graph (dict where key is user id, and value is a list of user id that are connected)
 # Returns a list of pairs representing new connections for current week
 def create_new_pairs(graph):
-    pairs, cost = hungarian_algorithm(graph)
+    pairs = blossom_algorithm(graph)
+    # print(pairs)
     return pairs

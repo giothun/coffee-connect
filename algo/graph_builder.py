@@ -49,13 +49,13 @@ def are_close(u, v):
 
 
 def build_initial_graph(users, users_id, users_info):
-    graph = [[NO_EDGE_VALUE for _ in range(len(users))] for _ in range(len(users))]
+    graph = []
     for user1 in users:
         for user2 in users:
             if user1 == user2:
                 continue
             if are_close(users_info[user1], users_info[user2]):
-                graph[users_id[user1]][users_id[user2]] = calculate_weight(users_info[user1], users_info[user2])
+                graph.append([users_id[user1], users_id[user2], calculate_weight(users_info[user1], users_info[user2])])
     return graph
 
 
@@ -70,9 +70,11 @@ def build_graph_with_history(graph, history, users_id, users_info, users_ind):
     for i in range(n):
         for user1 in good_meets[i]:
             for user2 in good_meets[i]:
-                graph[user1][user2] = (calculate_weight(users_info[user1], users_info[user2]) +
+                if calculate_weight(users_info[user1], users_info[user2]) < MATCH_VALUE:
+                    w = (calculate_weight(users_info[user1], users_info[user2]) +
                                        (calculate_weight(users_info[users_ind[i]], users_info[user1]) +
                                         calculate_weight(users_info[users_ind[i]], users_info[user2])) / 2)
+                    graph.append([user1, user2, w])
     return graph
 
 
