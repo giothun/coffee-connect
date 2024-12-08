@@ -291,7 +291,6 @@ async def my_profile(callback_query: types.CallbackQuery, state: FSMContext):
         await callback_query.message.delete()
         delete_button = InlineKeyboardMarkup(
             inline_keyboard=[
-                [InlineKeyboardButton(text="🗑 Delete My Information", callback_data="delete_info")],
                 [InlineKeyboardButton(text="🔙 Back to Menu", callback_data="back_to_menu")]
             ]
         )
@@ -401,23 +400,6 @@ async def resume_matching(callback_query: types.CallbackQuery, state: FSMContext
     update_db(user_id, {'is_active': True})
     await callback_query.answer("▶️ Matching has been resumed.")
     await open_menu(callback_query, state)
-
-@dp.callback_query(F.data == 'delete_info')
-async def delete_info(callback_query: types.CallbackQuery, state: FSMContext):
-    await callback_query.message.edit_text("🗑 Are you sure you want to delete your information? This action cannot be undone.", reply_markup=InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="✅ Yes, delete my information", callback_data="confirm_delete")],
-            [InlineKeyboardButton(text="❌ No, go back", callback_data="back_to_menu")]
-        ]
-    ))
-    await state.set_state(DeleteForm.confirm)
-
-@dp.callback_query(F.data == 'confirm_delete', DeleteForm.confirm)
-async def confirm_delete(callback_query: types.CallbackQuery, state: FSMContext):
-    user_id = callback_query.from_user.id
-    delete_user_data(user_id)
-    await state.clear()
-    await callback_query.message.edit_text("🗑 Your information has been deleted. If you wish to use the bot again, please register anew by typing /start.")
 
 async def open_menu(message_or_query, state: FSMContext):
     user_id = message_or_query.from_user.id
