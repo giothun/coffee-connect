@@ -24,6 +24,20 @@ def get_data():
 
 
 def update(pairs):
-    # Put newly created pairs in the database
-    # TODO
-    pass
+    db = firestore.client()
+    history_ref = db.collection("history")
+    match_pairs = {
+        'timestamp': firestore.SERVER_TIMESTAMP,
+        "match_pairs": [
+            {
+                "user1_id": pair[0],
+                "user1_isLike": 0,
+                "user2_id": pair[1],
+                "user2_isLike": 0,
+                "meeting_happened": None,
+            }
+            for pair in pairs
+        ]
+    }
+    history_ref.add(match_pairs)
+    # print(pairs)
