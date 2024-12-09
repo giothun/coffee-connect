@@ -23,6 +23,11 @@ def get_data():
     return get_users(db), get_history(db)
 
 
+def set_config_true(db):
+    conf = db.collection("config").document("matching")
+    conf.update({"send": True})
+
+
 def update(pairs):
     db = firestore.client()
     history_ref = db.collection("history")
@@ -39,5 +44,6 @@ def update(pairs):
             for pair in pairs
         ]
     }
+    set_config_true(db)
     history_ref.add(match_pairs)
     # print(pairs)

@@ -3,7 +3,7 @@ import graph_builder
 import matching
 
 
-def main():
+def make_pairs():
     users, history = database.get_data()
     graph, users_ind = graph_builder.build_graph(users, history)
     pairs = matching.create_new_pairs(graph)
@@ -12,4 +12,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    make_pairs()

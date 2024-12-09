@@ -61,16 +61,24 @@ def build_initial_graph(users, users_id, users_info):
 
 def build_graph_with_history(graph, history, users_id, users_info, users_ind):
     n = len(graph)
+    meets = set()
+    for previous_match in history:
+        for pair in previous_match.to_dict()['match_pairs']:
+            meets.add((users_id[pair['user1_id']], users_id[pair['user2_id']]))
+            meets.add((users_id[pair['user2_id']], users_id[pair['user1_id']]))
     good_meets = [[] for _ in range(n)]
     for previous_match in history:
         for pair in previous_match.to_dict()['match_pairs']:
-            if pair['user1_isLike'] == 1 and pair['user2_isLike'] == 1:
-                good_meets[users_id[pair['user1_id']]].append(users_id[pair['user2_id']])
-                good_meets[users_id[pair['user2_id']]].append(users_id[pair['user1_id']])
+            user1 = users_id[pair['user1_id']]
+            user2 = users_id[pair['user2_id']]
+            if pair['user1_isLike'] == 1 and pair['user2_isLike'] == 1 and (user1, user2) not in meets:
+                good_meets[user1].append(user2)
+                good_meets[user2].append(user1)
     for i in range(n):
         for user1 in good_meets[i]:
             for user2 in good_meets[i]:
-                if calculate_weight(users_info[user1], users_info[user2]) < MATCH_VALUE:
+                if calculate_weight(users_info[user1], users_info[user2]) < MATCH_VALUE \
+                        and (user1, user2) not in meets:
                     w = (calculate_weight(users_info[user1], users_info[user2]) +
                                        (calculate_weight(users_info[users_ind[i]], users_info[user1]) +
                                         calculate_weight(users_info[users_ind[i]], users_info[user2])) / 2)
