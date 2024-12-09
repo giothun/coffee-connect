@@ -5,11 +5,11 @@ from blossom import blossom_algorithm
 # Greedy approach to compare with smart algorithm
 def greedy(graph):
     edges = sorted(graph, key=lambda x: -x[2])
-    n = max([i for i, j, w in graph]) + 1
+    n = max([max(i, j) for i, j, w in graph]) + 1
     used = [0] * n
     cost = 0
     res = []
-    for value, i, j in edges:
+    for i, j, value in edges:
         if used[i] == 0 and used[j] == 0:
             used[i] = 1
             used[j] = 1
@@ -83,14 +83,18 @@ def hungarian_algorithm(graph):
 # Function that compares which algorithm finds a better matching
 # Returns True if first algorithm did not worse, False otherwise
 def compare(graph, f1, f2):
-    _, cost1 = f1(graph)
-    _, cost2 = f2(graph)
-    return cost2 >= cost1
+    match1, cost1 = f1(graph)
+    match2, cost2 = f2(graph)
+    if len(match1) > len(match2):
+        return True
+    if len(match1) < len(match2):
+        return False
+    return cost1 >= cost2
 
 
 # Takes graph (dict where key is user id, and value is a list of user id that are connected)
 # Returns a list of pairs representing new connections for current week
 def create_new_pairs(graph):
-    pairs = blossom_algorithm(graph)
+    pairs, weight = blossom_algorithm(graph)
     # print(pairs)
     return pairs

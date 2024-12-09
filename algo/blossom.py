@@ -370,4 +370,4 @@ def blossom_algorithm(edges):
             used[i] = 1
             pairs.append((i, mt))
 
-    return pairs
+    return pairs, sum([w for i, j, w in edges if (i, j) in pairs])
