@@ -42,9 +42,22 @@ class TestBlossomAlgorithm(unittest.TestCase):
             self.assertEqual(correct_result, weight)
 
     def test_compare_with_greedy(self):
-        for _ in range(20):
-            edges = self.generate_graph(200, 250)
-            self.assertTrue(compare(edges, blossom_algorithm, greedy))
+        num = 5000
+        cnt = 0
+        sm = 0
+        more_pairs = 0
+        for _ in range(num):
+            edges = self.generate_graph(50, 100)
+            f = compare(edges, blossom_algorithm, greedy)
+            self.assertTrue(f)
+            greedy_pairs, greedy_result = greedy(edges)
+            pairs, result = blossom_algorithm(edges)
+            cnt += result - greedy_result
+            sm += greedy_result
+            if len(pairs) > len(greedy_pairs):
+                more_pairs += 1
+        print(f"Blossom algorithm found a bigger matching in {(more_pairs / num * 100):0,.2f}% cases")
+        print(f"Blossom algorithm outperformed greedy by {(cnt / sm * 100):0,.2f}%")
 
     def generate_graph(self, l, r):
         n = random.randint(l, r)
